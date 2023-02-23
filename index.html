@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+
+        <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@ionic/core@6.5.2/dist/ionic/ionic.esm.js"
+        ></script>
+        <script
+            nomodule
+            src="https://cdn.jsdelivr.net/npm/@ionic/core@6.5.2/dist/ionic/ionic.js"
+        ></script>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@ionic/core@6.5.2/css/ionic.bundle.css"
+        />
+    </head>
+    <body>
+        <ion-app>
+            <ion-router>
+                <ion-route
+                    url="/registro.php"
+                    component="page-registro"
+                ></ion-route>
+            </ion-router>
+            <ion-router-outlet></ion-router-outlet>
+            <!-- REGISTRO -->
+            <ion-page class="ion-page" id="page-registro">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Registro</ion-title>
+                    </ion-toolbar>
+                </ion-header>
+
+                <ion-content class="ion-padding">
+                    <form id="formRegistroUsuario">
+                        <ion-list>
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Nombre de usuario</ion-label
+                                >
+                                <ion-input
+                                    type="text"
+                                    name="username"
+                                    id="usuario"
+                                ></ion-input>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Contraseña</ion-label
+                                >
+                                <ion-input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                ></ion-input>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Confirmar contraseña</ion-label
+                                >
+                                <ion-input
+                                    type="password"
+                                    name="confirm-password"
+                                ></ion-input>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Departamento</ion-label
+                                >
+                                <ion-select
+                                    interface="action-sheet"
+                                    placeholder="Seleccionar departamento"
+                                    id="departamento"
+                                >
+                                </ion-select>
+                            </ion-item>
+
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Ciudad</ion-label
+                                >
+                                <ion-select
+                                    interface="action-sheet"
+                                    placeholder="Seleccionar departamento"
+                                    id="ciudad"
+                                >
+                                </ion-select>
+                            </ion-item>
+
+                            <ion-button
+                                expand="block"
+                                color="primary"
+                                id="register-btn"
+                                >Registrar</ion-button
+                            >
+                        </ion-list>
+                    </form>
+                </ion-content>
+
+                <ion-footer>
+                    <ion-toolbar>
+                        <ion-title>Footer</ion-title>
+                    </ion-toolbar>
+                </ion-footer>
+            </ion-page>
+
+            <!-- LOGIN -->
+            <!-- <ion-page class="ion-page" id="page-login"
+                ><ion-header>
+                    <ion-toolbar>
+                        <ion-title>Login</ion-title>
+                    </ion-toolbar>
+                </ion-header>
+
+                <ion-content class="ion-padding">
+                    <h1>Login Usuario</h1>
+                    <form id="formLoginUsuario"></form>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label position="floating"
+                                >Nombre de usuario</ion-label
+                            >
+                            <ion-input type="text" name="username"></ion-input>
+                        </ion-item>
+
+                        <ion-item>
+                            <ion-label position="floating"
+                                >Contraseña</ion-label
+                            >
+                            <ion-input
+                                type="password"
+                                name="password"
+                            ></ion-input>
+                        </ion-item>
+                    </ion-list>
+
+                    <ion-button
+                        expand="block"
+                        color="primary"
+                        id="register-btn"
+                        type="submit"
+                        >Ingresar</ion-button
+                    >
+                </ion-content>
+
+                <ion-footer>
+                    <ion-toolbar>
+                        <ion-title>Footer</ion-title>
+                    </ion-toolbar>
+                </ion-footer>
+            </ion-page> -->
+
+            <!-- <ion-page class="ion-page" id="page-home">
+                <h1>Home</h1>
+            </ion-page> -->
+        </ion-app>
+
+        <script src="./js/main.js"></script>
+    </body>
+</html>

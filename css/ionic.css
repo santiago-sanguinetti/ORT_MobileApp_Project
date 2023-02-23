@@ -1,0 +1,7 @@
+ion-page {
+    display: none;
+}
+
+ion-page.page-activa {
+    display: flex;
+}
