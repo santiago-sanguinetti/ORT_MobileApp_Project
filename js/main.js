@@ -6,22 +6,21 @@ iniciarApp();
 function iniciarApp() {
     guardarElementos();
     agregarEventos();
+    getDepartamentos();
 }
 
 function guardarElementos() {
     $.ionRouter = document.querySelector("ion-router");
 
     $.formRegistro = document.querySelector("#formRegistroUsuario");
-    // $.formLogin = document.querySelector("#formLoginUsuario");
-    $.slcDepartamento = document.querySelector("#departamento");
+    $.formLogin = document.querySelector("#formLoginUsuario");
 }
 
 function agregarEventos() {
     $.ionRouter.addEventListener("ionRouterDidChange", manejarRuta);
 
     $.formRegistro.addEventListener("submit", manejarRegistroUsuario);
-    // $.formLogin.addEventListener("submit", manejarLoginUsuario);
-    $.slcDepartamento.addEventListener("click", getDepartamentos);
+    $.formLogin.addEventListener("submit", manejarLoginUsuario);
 }
 
 function manejarRegistroUsuario(event) {
@@ -44,6 +43,17 @@ function obtenerDatosRegistro() {
 function manejarLoginUsuario(event) {
     event.preventDefault();
     console.log("login");
+
+    const datos = obtenerDatosLogin();
+    console.log(datos);
+    loginUsuario(datos);
+}
+
+function obtenerDatosLogin() {
+    return {
+        usuario: $.formLogin.querySelector("#usuario").value,
+        password: $.formLogin.querySelector("#password").value,
+    };
 }
 
 function manejarRuta(event) {
@@ -99,13 +109,13 @@ function registrarUsuario() {
         .catch(mostrarError);
 }
 
-function loginUsuario() {
+function loginUsuario(datos) {
     const headers = {
         "Content-Type": "application/json",
     };
     const body = {
-        usuario: "ss220503",
-        password: "123",
+        usuario: datos.usuario,
+        password: datos.password,
     };
 
     fetch(`${baseUrl}/login.php`, {
@@ -131,22 +141,23 @@ function getDepartamentos() {
     })
         .then(getJsonBody)
         .then((jsonResponse) => {
-            escribirDepartamentos(jsonResponse.data);
+            console.log(typeof jsonResponse.departamentos);
+            escribirDepartamentos(jsonResponse.departamentos);
         })
         .catch(mostrarError);
 }
 
 function escribirDepartamentos(departamentos) {
-    let departamentosHtml = "";
+    const fragment = document.createDocumentFragment();
+    const select = document.querySelector("#departamento");
+    departamentos.map((depto) => {
+        let opt = document.createElement("ion-select-option");
+        opt.value = depto.id;
+        opt.textContent = depto.nombre;
+        fragment.appendChild(opt);
+    });
 
-    for (let departamento of departamentos) {
-        departamentosHtml += /*html*/ `
-        <ion-select-option value="${departamento.id}">
-        ${departamento.nombre}
-        </ion-select-option>`;
-    }
-
-    document.querySelector("#slcDepartamentos").innerHTML = departamentosHtml;
+    select.appendChild(fragment);
 }
 
 function mostrarError(error) {

@@ -18,14 +18,17 @@
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/@ionic/core@6.5.2/css/ionic.bundle.css"
         />
+        <link rel="stylesheet" href="./css/ionic.css" />
     </head>
     <body>
         <ion-app>
             <ion-router>
+                <ion-route url="/" component="page-home"></ion-route>
                 <ion-route
-                    url="/registro.php"
+                    url="/registro"
                     component="page-registro"
                 ></ion-route>
+                <ion-route url="/login" component="page-login"></ion-route>
             </ion-router>
             <ion-router-outlet></ion-router-outlet>
             <!-- REGISTRO -->
@@ -113,7 +116,7 @@
             </ion-page>
 
             <!-- LOGIN -->
-            <!-- <ion-page class="ion-page" id="page-login"
+            <ion-page class="ion-page" id="page-login"
                 ><ion-header>
                     <ion-toolbar>
                         <ion-title>Login</ion-title>
@@ -122,32 +125,46 @@
 
                 <ion-content class="ion-padding">
                     <h1>Login Usuario</h1>
-                    <form id="formLoginUsuario"></form>
-                    <ion-list>
-                        <ion-item>
-                            <ion-label position="floating"
-                                >Nombre de usuario</ion-label
-                            >
-                            <ion-input type="text" name="username"></ion-input>
-                        </ion-item>
+                    <form id="formLoginUsuario">
+                        <ion-list>
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Nombre de usuario</ion-label
+                                >
+                                <ion-input
+                                    type="text"
+                                    name="username"
+                                    id="usuario"
+                                ></ion-input>
+                            </ion-item>
 
-                        <ion-item>
-                            <ion-label position="floating"
-                                >Contraseña</ion-label
-                            >
-                            <ion-input
-                                type="password"
-                                name="password"
-                            ></ion-input>
-                        </ion-item>
-                    </ion-list>
+                            <ion-item>
+                                <ion-label position="floating"
+                                    >Contraseña</ion-label
+                                >
+                                <ion-input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                ></ion-input>
+                            </ion-item>
+                        </ion-list>
 
+                        <ion-button
+                            expand="block"
+                            color="primary"
+                            id="login-btn"
+                            type="submit"
+                            >Ingresar</ion-button
+                        >
+                    </form>
                     <ion-button
                         expand="block"
-                        color="primary"
+                        color="secondary"
                         id="register-btn"
                         type="submit"
-                        >Ingresar</ion-button
+                        href="/registro"
+                        >Registrarse</ion-button
                     >
                 </ion-content>
 
@@ -156,7 +173,7 @@
                         <ion-title>Footer</ion-title>
                     </ion-toolbar>
                 </ion-footer>
-            </ion-page> -->
+            </ion-page>
 
             <!-- <ion-page class="ion-page" id="page-home">
                 <h1>Home</h1>
