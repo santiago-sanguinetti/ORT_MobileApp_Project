@@ -158,14 +158,15 @@
                             >Ingresar</ion-button
                         >
                     </form>
-                    <ion-button
-                        expand="block"
-                        color="secondary"
-                        id="register-btn"
-                        type="submit"
-                        href="/registro"
-                        >Registrarse</ion-button
-                    >
+                    <ion-router-link href="#/registro">
+                        <ion-button
+                            expand="block"
+                            color="secondary"
+                            id="register-btn"
+                            type="submit"
+                            >Registrarse</ion-button
+                        >
+                    </ion-router-link>
                 </ion-content>
 
                 <ion-footer>
@@ -174,10 +175,32 @@
                     </ion-toolbar>
                 </ion-footer>
             </ion-page>
+            <!-- HOME -->
+            <ion-page class="ion-page" id="page-home">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Home</ion-title>
+                    </ion-toolbar>
+                </ion-header>
 
-            <!-- <ion-page class="ion-page" id="page-home">
-                <h1>Home</h1>
-            </ion-page> -->
+                <ion-content class="ion-padding">
+                    <ion-router-link href="#/registro">
+                        <ion-button
+                            expand="block"
+                            color="secondary"
+                            id="register-btn"
+                            type="submit"
+                            >Botón provisorio - Ir al registro</ion-button
+                        >
+                    </ion-router-link>
+                </ion-content>
+
+                <ion-footer>
+                    <ion-toolbar>
+                        <ion-title>Footer</ion-title>
+                    </ion-toolbar>
+                </ion-footer>
+            </ion-page>
         </ion-app>
 
         <script src="./js/main.js"></script>

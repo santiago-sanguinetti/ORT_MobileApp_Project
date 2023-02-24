@@ -17,7 +17,7 @@ function guardarElementos() {
 }
 
 function agregarEventos() {
-    $.ionRouter.addEventListener("ionRouterDidChange", manejarRuta);
+    $.ionRouter.addEventListener("ionRouteDidChange", manejarRuta);
 
     $.formRegistro.addEventListener("submit", manejarRegistroUsuario);
     $.formLogin.addEventListener("submit", manejarLoginUsuario);

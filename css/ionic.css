@@ -56,10 +56,7 @@
     --ion-color-light-tint: #f5f6f9;
 }
 
-ion-page {
-    display: none;
-}
-
-ion-page.page-activa {
-    display: flex;
+.ion-page:not(.page-activa) {
+    /* No logré que funcione con display:none */
+    z-index: -1;
 }
