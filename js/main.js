@@ -71,8 +71,10 @@ function manejarRuta(event) {
             break;
         case "/registro":
             mostrarPageActiva("#page-registro");
+            break;
         case "/movimientos":
             mostrarPageActiva("#page-movimientos");
+            break;
     }
 }
 
