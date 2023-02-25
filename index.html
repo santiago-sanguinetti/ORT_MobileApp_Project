@@ -29,6 +29,10 @@
                     component="page-registro"
                 ></ion-route>
                 <ion-route url="/login" component="page-login"></ion-route>
+                <ion-route
+                    url="/movimientos"
+                    component="page-movimientos"
+                ></ion-route>
             </ion-router>
             <ion-router-outlet></ion-router-outlet>
 
@@ -52,6 +56,9 @@
                         </ion-item>
                         <ion-item href="/registro">
                             <ion-label>Registro</ion-label>
+                        </ion-item>
+                        <ion-item href="/movimientos">
+                            <ion-label>Movimientos</ion-label>
                         </ion-item>
                     </ion-list>
                 </ion-content>
@@ -212,6 +219,7 @@
                         </ion-toolbar>
                     </ion-footer>
                 </ion-page>
+
                 <!-- HOME -->
                 <ion-page class="ion-page" id="page-home">
                     <ion-header>
@@ -238,6 +246,103 @@
                         </ion-toolbar>
                     </ion-footer>
                 </ion-page>
+
+                <!-- MOVIMIENTOS -->
+                <!-- <ion-page class="ion-page" id="page-movimientos">
+                    <ion-header>
+                        <ion-toolbar>
+                            <ion-title>Gastos</ion-title>
+                        </ion-toolbar>
+                    </ion-header>
+
+                    <ion-content class="ion-padding">
+                        <h1>Agregar Gastos</h1>
+                        <form id="formGastosUsuario">
+                            <ion-list>
+                                <ion-item>
+                                    <ion-label position="floating"
+                                        >Concepto</ion-label
+                                    >
+                                    <ion-input
+                                        type="text"
+                                        name="concepto"
+                                        id="conceptoGasto"
+                                    ></ion-input>
+                                </ion-item>
+
+                                <ion-item>
+                                    <ion-label position="floating"
+                                        >Rubro</ion-label
+                                    >
+                                    <ion-select
+                                        interface="action-sheet"
+                                        placeholder="Seleccionar rubro"
+                                        id="rubroGasto"
+                                    >
+                                    </ion-select>
+                                </ion-item>
+
+                                <ion-item>
+                                    <ion-label position="floating"
+                                        >Medio de pago</ion-label
+                                    >
+                                    <ion-select
+                                        interface="action-sheet"
+                                        placeholder="Seleccionar rubro"
+                                        id="rubroGasto"
+                                    >
+                                        <ion-select-option value="Efectivo"
+                                            >Efectivo</ion-select-option
+                                        >
+                                        <ion-select-option
+                                            value="Tarjeta de Débito"
+                                            >Tarjeta de
+                                            débito</ion-select-option
+                                        >
+                                        <ion-select-option
+                                            value="Tarjeta Crédito"
+                                            >Tarjeta de
+                                            crédito</ion-select-option
+                                        >
+                                    </ion-select>
+                                </ion-item>
+
+                                <ion-item>
+                                    <ion-label position="floating"
+                                        >Monto ($U)</ion-label
+                                    >
+                                    <ion-input
+                                        type="number"
+                                        name="monto"
+                                        id="montoGasto"
+                                    ></ion-input>
+                                </ion-item>
+
+                                <ion-item>
+                                    <ion-datetime
+                                        show-default-buttons="true"
+                                        presentation="date"
+                                        id="fechaGasto"
+                                    ></ion-datetime>
+                                </ion-item>
+                            </ion-list>
+
+                            <ion-button
+                                expand="block"
+                                color="primary"
+                                id="gastos-btn"
+                                type="submit"
+                                >Ingresar gasto</ion-button
+                            >
+                        </form>
+                    </ion-content>
+
+                    <ion-footer>
+                        <ion-toolbar>
+                            <ion-title>Footer</ion-title>
+                        </ion-toolbar>
+                    </ion-footer>
+                </ion-page> -->
             </ion-content>
         </ion-app>
 

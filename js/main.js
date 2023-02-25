@@ -1,5 +1,5 @@
 const baseUrl = "https://dwallet.develotion.com/";
-let token = "";
+let token = getSesionUsuario();
 
 const $ = {};
 iniciarApp();
@@ -71,6 +71,8 @@ function manejarRuta(event) {
             break;
         case "/registro":
             mostrarPageActiva("#page-registro");
+        case "/movimientos":
+            mostrarPageActiva("#page-movimientos");
     }
 }
 
@@ -126,6 +128,8 @@ function loginUsuario(datos) {
         .then(getJsonBody)
         .then(function (jsonResponse) {
             console.log("then login", jsonResponse);
+            guardarSesionUsuario(jsonResponse.apiKey);
+            console.log(jsonResponse.apiKey);
         })
         .catch(mostrarError);
 }
@@ -168,4 +172,48 @@ function mostrarError(error) {
 function getJsonBody(response) {
     console.log(response);
     return response.json();
+}
+
+function guardarSesionUsuario(apiKey) {
+    token = apiKey;
+    guardarLocalStorage("tokenUsuario", token);
+}
+
+function guardarLocalStorage(clave, valor) {
+    localStorage.setItem(clave, JSON.stringify(valor));
+}
+
+function getSesionUsuario() {
+    return leerLocalStorage("tokenUsuario", "");
+}
+
+function leerLocalStorage(clave, valorPorDefecto) {
+    const valorStorage = JSON.parse(localStorage.getItem(clave));
+
+    if (valorStorage === null) {
+        return valorPorDefecto;
+    } else {
+        return valorStorage;
+    }
+}
+
+function getRubros() {
+    const headers = {
+        "Content-Type": "application/json",
+    };
+
+    fetch(`${baseUrl}/rubros.php`, {
+        method: "GET",
+        headers: headers,
+    })
+        .then(getJsonBody)
+        .then((jsonResponse) => {
+            console.log(typeof jsonResponse.rubros);
+            escribirRubros(json.Response.departamentos);
+        })
+        .catch(mostrarError);
+}
+
+function escribirRubros(rubros) {
+    //esto debería ser similar a la de ciudades y departamentos
 }
