@@ -61,7 +61,14 @@
             >
                 <ion-header>
                     <ion-toolbar>
-                        <ion-title>Menu</ion-title>
+                        <ion-title>Menu</ion-title
+                        ><ion-button
+                            fill="clear"
+                            slot="end"
+                            id="refrescarApp"
+                            onclick="iniciarApp()"
+                            >Refrescar</ion-button
+                        >
                     </ion-toolbar>
                 </ion-header>
                 <ion-content>
@@ -317,12 +324,7 @@
                                 </ion-item>
 
                                 <ion-item>
-                                    <ion-label position="floating"
-                                        >Fecha</ion-label
-                                    >
                                     <ion-datetime
-                                        [showDefaultTitle]="true"
-                                        show-default-buttons="true"
                                         presentation="date"
                                         id="fecha"
                                     ></ion-datetime>

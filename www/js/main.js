@@ -17,9 +17,6 @@ function iniciarApp() {
     agregarEventos();
     getDepartamentos();
     manejarDatosAPI();
-
-    console.log("token:", token);
-    console.log("idUsuario:", id);
 }
 
 function guardarElementos() {
@@ -73,21 +70,16 @@ function manejarLoginUsuario(event) {
 
 function manejarRegistroUsuario(event) {
     event.preventDefault();
-    console.log("registro");
 
     const datos = obtenerDatosRegistro();
-    console.log(datos);
     registrarUsuario(datos);
 }
 
 function manejarGastosUsuario(event) {
     event.preventDefault();
-    console.log("gasto", event);
 
     const datos = obtenerDatosMovimiento("gasto");
-    console.log("manejarGastosUsuario", datos);
     if (datos.total > 0) {
-        console.log("llegó a ingresar");
         ingresarMovimiento(datos);
     } else if (datos.total <= 0) {
         mostrarToastError("El monto debe ser positivo");
@@ -104,7 +96,6 @@ function obtenerDatosMovimiento(tipo) {
         formMovimiento.querySelector("#fecha").value != undefined &&
         formMovimiento.querySelector("#monto").value != ""
     ) {
-        console.log("obtenerDatosMovimiento");
         return {
             idUsuario: id,
             concepto: formMovimiento.querySelector("#concepto").value,
@@ -132,7 +123,6 @@ function ingresarMovimiento(datos) {
         medio: datos.medio,
         fecha: datos.fecha,
     };
-    console.log("datos ingresarMovimiento", datos);
 
     fetch(`${baseUrl}/movimientos.php`, {
         method: "POST",
@@ -141,7 +131,6 @@ function ingresarMovimiento(datos) {
     })
         .then(getJsonBody)
         .then(function (jsonResponse) {
-            console.log("then gasto", jsonResponse, jsonResponse.mensaje);
             mostrarToastSuccess(jsonResponse.mensaje);
             obtenerMovimientosUsuario();
         })
@@ -150,11 +139,13 @@ function ingresarMovimiento(datos) {
 
 function manejarIngresosUsuario(event) {
     event.preventDefault();
-    console.log("Ingreso");
 
     const datos = obtenerDatosMovimiento("ingreso");
-    console.log(datos);
-    ingresarMovimiento(datos);
+    if (datos.total > 0) {
+        ingresarMovimiento(datos);
+    } else if (datos.total <= 0) {
+        mostrarToastError("El monto debe ser positivo");
+    }
 }
 
 function obtenerDatosLogin() {
@@ -198,7 +189,8 @@ function manejarRuta(event) {
     }
 }
 function manejarDatosAPI() {
-    if (token != "") {
+    apiKey = token;
+    if (apiKey != "") {
         obtenerMovimientosUsuario();
         getRubros(token, "ingreso");
         getRubros(token, "gasto");
@@ -206,6 +198,7 @@ function manejarDatosAPI() {
     } else {
         token = getSesionUsuario();
         id = getIdUsuario();
+        guardarSesionUsuario(token, id);
         if (token != "") {
             manejarDatosAPI();
         }
@@ -262,7 +255,6 @@ function registrarUsuario(datos) {
     })
         .then(getJsonBody)
         .then(function (jsonResponse) {
-            console.log("then registro", jsonResponse);
             if (jsonResponse.mensaje) {
                 // Si entra al if es porque la api devolvió un evento con mensaje de error
                 mostrarToastError(jsonResponse.mensaje);
@@ -293,7 +285,6 @@ function loginUsuario(datos) {
             guardarSesionUsuario(jsonResponse.apiKey, jsonResponse.id);
             iniciarApp();
             navegar("/movimientos");
-            console.log(jsonResponse.apiKey, jsonResponse.id);
         })
         .catch(mostrarError);
 }
@@ -378,13 +369,11 @@ function getRubros(apiKey, tipo) {
         .then((jsonResponse) => {
             escribirRubros(jsonResponse.rubros, tipo);
             rubros = jsonResponse.rubros;
-            console.log(rubros);
         })
         .catch(mostrarError);
 }
 
 function escribirRubros(rubros, tipo) {
-    console.log("escribirRubros");
     const fragment = document.createDocumentFragment();
     const select = document.querySelector(`#rubro${tipo}`);
 
@@ -455,7 +444,6 @@ function obtenerMovimientosUsuario() {
     })
         .then(getJsonBody)
         .then(function (jsonResponse) {
-            console.log("then get movimientos", jsonResponse);
             escribirMovimientos(jsonResponse.movimientos);
             escribirSaldos(jsonResponse.movimientos);
         })
@@ -491,29 +479,59 @@ function escribirSaldos(movimientos) {
     ingresos.innerHTML = `Ingresos: ${totalIngresos}`;
 }
 
+function rubrosPorCategoria(rubros, movimientos) {
+    const categorias = {};
+
+    for (const obj of rubros) {
+        categorias[obj.id] = obj;
+    }
+
+    for (const obj of movimientos) {
+        const categoria = obj.categoria;
+        const categoriaObj = categorias[categoria];
+        const nombre = categoriaObj;
+
+        return nombre;
+    }
+}
+
 function escribirMovimientos(data) {
     let movimientos = filtrarMovimientos(data, obtenerFiltro());
     const cardContainer = document.querySelector("#cardMovimientosContainer");
     cardContainer.innerHTML = "";
+
     movimientos.forEach((movimiento) => {
+        let claseCardMovimiento = "";
+        let icono = "";
+        let nombreRubro = "";
         let tipo = "";
+        rubros.forEach((rubro) => {
+            if (rubro.id == movimiento.categoria) {
+                nombreRubro = rubro.nombre;
+                tipo = rubro.tipo;
+            }
+        });
 
         if (movimiento.categoria <= 6) {
-            tipo = "cardGasto";
-        } else if (movimiento.categoria >= 6) {
-            tipo = "cardIngreso";
+            claseCardMovimiento = "cardGasto";
+            icono = `<ion-icon name="trending-down-outline"></ion-icon>`;
+        } else if (movimiento.categoria > 6) {
+            claseCardMovimiento = "cardIngreso";
+            icono = `<ion-icon name="trending-up-outline"></ion-icon>`;
         }
 
         const cardHTML = `
         
-        <ion-card class="${tipo}">
+        <ion-card class="${claseCardMovimiento}">
             <ion-card-header>
-                <ion-card-title>${movimiento.concepto}</ion-card-title>
+                <ion-card-title>${icono} ${movimiento.concepto} </ion-icon></ion-card-title>
                 <ion-card-subtitle>Fecha: ${movimiento.fecha}</ion-card-subtitle>
             </ion-card-header>
 
             <ion-card-content>
-            <p>Monto: ${movimiento.total}</p>
+            <p>Tipo: ${tipo} </p>
+            <p>Rubro: ${nombreRubro} </p>
+            <p>Monto: ${movimiento.total} </p>
             <p>Medio de pago: ${movimiento.medio}</p>
         
             </ion-card-content>
@@ -526,7 +544,6 @@ function escribirMovimientos(data) {
 }
 
 function filtrarMovimientos(movimientos, tipo = "default") {
-    console.log("filtro", movimientos);
     if (tipo === "gasto") {
         return movimientos.filter((movimiento) => movimiento.categoria <= 6);
     } else if (tipo === "ingreso") {
@@ -539,7 +556,7 @@ function obtenerFiltro() {
     return document.querySelector("#filtroMovimientos").value;
 }
 
-// Me dejó de funcionar sin tocar nada
+//Deja de funcionar al poner el js como module
 function eliminarMovimiento(idMovimiento) {
     const headers = {
         "Content-Type": "application/json",
@@ -556,14 +573,12 @@ function eliminarMovimiento(idMovimiento) {
     })
         .then(getJsonBody)
         .then(function (jsonResponse) {
-            console.log("then DELETE", jsonResponse);
             obtenerMovimientosUsuario();
         })
         .catch(mostrarError);
 }
 
 function crearMapa(cajeros) {
-    console.log(cajeros);
     mapContainer = document.querySelector("#map");
 
     // Si no tiene elementos hijos se crea el mapa
@@ -628,7 +643,6 @@ function getCajeros() {
         .then(getJsonBody)
         .then((jsonResponse) => {
             crearMapa(jsonResponse.cajeros);
-            console.log("getcajeros", jsonResponse);
         })
         .catch(mostrarError);
 }
