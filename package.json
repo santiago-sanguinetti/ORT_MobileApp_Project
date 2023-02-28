@@ -1,0 +1,26 @@
+{
+  "name": "proyectoapi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santiago-sanguinetti/Taller-API.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/santiago-sanguinetti/Taller-API/issues"
+  },
+  "homepage": "https://github.com/santiago-sanguinetti/Taller-API#readme",
+  "dependencies": {
+    "@capacitor/android": "^4.7.0",
+    "@capacitor/cli": "^4.7.0",
+    "@capacitor/core": "^4.7.0",
+    "@capacitor/geolocation": "^4.1.0",
+    "@capacitor/share": "^4.1.1"
+  },
+  "description": ""
+}
