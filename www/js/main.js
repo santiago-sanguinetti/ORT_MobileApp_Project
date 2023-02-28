@@ -6,8 +6,8 @@
 // Failed to load module script: Expected a JavaScript module script but the server responded with a MIME type of "text/html". Strict MIME type checking is enforced for module scripts per HTML spec.
 
 const baseUrl = "https://dwallet.develotion.com/";
-let token = getSesionUsuario();
-let id = getIdUsuario();
+let token = "";
+let id = 0;
 let rubros = [];
 
 const $ = {};
@@ -64,7 +64,11 @@ function manejarLoginUsuario(event) {
     event.preventDefault();
 
     const datos = obtenerDatosLogin();
-    loginUsuario(datos);
+    if (datos.usuario != "" && datos.password != "") {
+        loginUsuario(datos);
+    } else {
+        mostrarToastError("Por favor, complete los campos");
+    }
 }
 
 function manejarRegistroUsuario(event) {
@@ -78,11 +82,16 @@ function manejarRegistroUsuario(event) {
 
 function manejarGastosUsuario(event) {
     event.preventDefault();
-    console.log("gasto");
+    console.log("gasto", event);
 
     const datos = obtenerDatosMovimiento("gasto");
-    console.log(datos);
-    ingresarMovimiento(datos);
+    console.log("manejarGastosUsuario", datos);
+    if (datos.total > 0) {
+        console.log("llegó a ingresar");
+        ingresarMovimiento(datos);
+    } else if (datos.total <= 0) {
+        mostrarToastError("El monto debe ser positivo");
+    }
 }
 
 function obtenerDatosMovimiento(tipo) {
@@ -91,15 +100,23 @@ function obtenerDatosMovimiento(tipo) {
     if (tipo === "ingreso") {
         formMovimiento = $.formIngreso;
     }
-
-    return {
-        idUsuario: id,
-        concepto: formMovimiento.querySelector("#concepto").value,
-        categoria: formMovimiento.querySelector(`#rubro${tipo}`).value,
-        total: parseInt(formMovimiento.querySelector("#monto").value),
-        medio: formMovimiento.querySelector("#medioPago").value,
-        fecha: formMovimiento.querySelector("#fecha").value.slice(0, 10),
-    };
+    if (
+        formMovimiento.querySelector("#fecha").value != undefined &&
+        formMovimiento.querySelector("#monto").value != ""
+    ) {
+        console.log("obtenerDatosMovimiento");
+        return {
+            idUsuario: id,
+            concepto: formMovimiento.querySelector("#concepto").value,
+            categoria: formMovimiento.querySelector(`#rubro${tipo}`).value,
+            total: parseInt(formMovimiento.querySelector("#monto").value),
+            medio: formMovimiento.querySelector("#medioPago").value,
+            fecha: formMovimiento.querySelector("#fecha").value.slice(0, 10),
+        };
+    } else {
+        mostrarToastError("Por favor, complete los campos");
+        return {};
+    }
 }
 
 function ingresarMovimiento(datos) {
@@ -115,6 +132,7 @@ function ingresarMovimiento(datos) {
         medio: datos.medio,
         fecha: datos.fecha,
     };
+    console.log("datos ingresarMovimiento", datos);
 
     fetch(`${baseUrl}/movimientos.php`, {
         method: "POST",
@@ -123,7 +141,8 @@ function ingresarMovimiento(datos) {
     })
         .then(getJsonBody)
         .then(function (jsonResponse) {
-            console.log("then gasto", jsonResponse);
+            console.log("then gasto", jsonResponse, jsonResponse.mensaje);
+            mostrarToastSuccess(jsonResponse.mensaje);
             obtenerMovimientosUsuario();
         })
         .catch(mostrarError);
@@ -154,9 +173,6 @@ function manejarRuta(event) {
         ocultarPageActiva();
 
         switch (path) {
-            case "/":
-                mostrarPageActiva("#page-home");
-                break;
             case "/login":
                 mostrarPageActiva("#page-login");
                 break;
@@ -182,17 +198,27 @@ function manejarRuta(event) {
     }
 }
 function manejarDatosAPI() {
-    if (token !== "") {
+    if (token != "") {
         obtenerMovimientosUsuario();
         getRubros(token, "ingreso");
         getRubros(token, "gasto");
         getCajeros();
+    } else {
+        token = getSesionUsuario();
+        id = getIdUsuario();
+        if (token != "") {
+            manejarDatosAPI();
+        }
     }
 }
+
 function validarSesion(path) {
     if (path !== "/login" && path !== "/registro") {
         if (token === "") {
             navegar("/login");
+            // mostrarToastError(
+            //     "Debe haber ingresado para realizar esta acción."
+            // );
             return false;
         } else {
             return true;
@@ -237,7 +263,13 @@ function registrarUsuario(datos) {
         .then(getJsonBody)
         .then(function (jsonResponse) {
             console.log("then registro", jsonResponse);
-            navegar("/login");
+            if (jsonResponse.mensaje) {
+                // Si entra al if es porque la api devolvió un evento con mensaje de error
+                mostrarToastError(jsonResponse.mensaje);
+            } else {
+                mostrarToastSuccess("Usuario creado con éxito");
+                navegar("/login");
+            }
         })
         .catch(mostrarError);
 }
@@ -259,7 +291,8 @@ function loginUsuario(datos) {
         .then(getJsonBody)
         .then(function (jsonResponse) {
             guardarSesionUsuario(jsonResponse.apiKey, jsonResponse.id);
-            navegar("/gastos");
+            iniciarApp();
+            navegar("/movimientos");
             console.log(jsonResponse.apiKey, jsonResponse.id);
         })
         .catch(mostrarError);
@@ -269,8 +302,8 @@ function logoutUsuario() {
     if (token) {
         token = "";
         id = -1;
-        guardarLocalStorage("tokenUsuario", "");
-        guardarLocalStorage("idUsuario", id);
+        borrarLocalStorage();
+        mostrarToast("Se ha cerrado la sesión correctamente");
         navegar("/login");
     }
 }
@@ -351,10 +384,11 @@ function getRubros(apiKey, tipo) {
 }
 
 function escribirRubros(rubros, tipo) {
+    console.log("escribirRubros");
     const fragment = document.createDocumentFragment();
     const select = document.querySelector(`#rubro${tipo}`);
 
-    if (!select.hasChildNodes()) {
+    if (select.childNodes.length < 6) {
         rubros.map((rubro) => {
             if (rubro.tipo == tipo) {
                 let opt = document.createElement("ion-select-option");
@@ -371,6 +405,7 @@ function escribirRubros(rubros, tipo) {
 function mostrarError(error) {
     //se podría mostrar un mensaje en algún lado también
     console.warn(error);
+    mostrarToastError(error.mensaje);
 }
 
 function getJsonBody(response) {
@@ -386,6 +421,9 @@ function guardarSesionUsuario(apiKey, idUsuario) {
 
 function guardarLocalStorage(clave, valor) {
     localStorage.setItem(clave, JSON.stringify(valor));
+}
+function borrarLocalStorage() {
+    localStorage.clear();
 }
 
 function getSesionUsuario() {
@@ -457,7 +495,6 @@ function escribirMovimientos(data) {
     let movimientos = filtrarMovimientos(data, obtenerFiltro());
     const cardContainer = document.querySelector("#cardMovimientosContainer");
     cardContainer.innerHTML = "";
-
     movimientos.forEach((movimiento) => {
         let tipo = "";
 
@@ -502,6 +539,7 @@ function obtenerFiltro() {
     return document.querySelector("#filtroMovimientos").value;
 }
 
+// Me dejó de funcionar sin tocar nada
 function eliminarMovimiento(idMovimiento) {
     const headers = {
         "Content-Type": "application/json",
@@ -525,8 +563,10 @@ function eliminarMovimiento(idMovimiento) {
 }
 
 function crearMapa(cajeros) {
-    let mapContainer = document.querySelector("#map");
     console.log(cajeros);
+    mapContainer = document.querySelector("#map");
+
+    // Si no tiene elementos hijos se crea el mapa
     if (!mapContainer.hasChildNodes()) {
         var map = L.map("map").setView([-34.901, -56.164], 13);
 
@@ -576,7 +616,6 @@ function crearMapa(cajeros) {
     }
 }
 
-getCajeros();
 function getCajeros() {
     const headers = {
         "Content-Type": "application/json",
@@ -594,7 +633,27 @@ function getCajeros() {
         .catch(mostrarError);
 }
 
-// Estas funciones no se utilizan porque no pude hacer funcionar el plugin de capacitor
+function mostrarToast(mensaje, color) {
+    const $toast = document.createElement("ion-toast");
+    $toast.message = mensaje;
+    $toast.duration = 2000;
+    $toast.color = color;
+    $toast.position = "bottom";
+
+    document.body.appendChild($toast);
+    $toast.present();
+}
+
+function mostrarToastSuccess(mensaje) {
+    mostrarToast(mensaje, "success");
+}
+
+function mostrarToastError(mensaje) {
+    mostrarToast(mensaje, "danger");
+}
+
+// ↓ Estas funciones no se utilizan porque no pude hacer funcionar el plugin de capacitor ↓
+// Obtener ubicación del usuario
 async function obtenerUbicacionUsuario() {
     navigator.geolocation.getCurrentPosition(
         successGeolocation,
@@ -615,6 +674,7 @@ function errorGeolocation(error) {
     console.warn("geolocalizacion", error);
 }
 
+// Compartir app
 async function compartirApp() {
     await Share.share({
         title: "Gastos y Finanzas",
